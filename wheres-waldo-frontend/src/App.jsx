@@ -1,13 +1,12 @@
 import './App.css'
-import CanvasComponent from './Canvas';
+import Game from './Game';
 
 function App() {
 
   return (
     <>
     <div>
-      <h1>Find Waldo</h1>
-      <CanvasComponent />
+      <Game />
     </div>
     </>
   )
