@@ -4,9 +4,13 @@ import gameImage from './assets/testImage.png'
 
 function Game() {
     const gameAreaRef = useRef(null)
+    const isHoldingRef = useRef(false)
+    const dragged = useRef(false)
+    const draggableTimer = useRef(null)
     const [scale, setScale] = useState(1)
     const [translateX, setTranslateX] = useState(0)
     const [translateY, setTranslateY] = useState(0)
+    const lastPositionRef = useRef({ x: 0, y: 0 })
     const SCALE_VAL = 0.2
     const MIN_SCALE = 0.5;
     const MAX_SCALE = 4;
@@ -16,7 +20,7 @@ function Game() {
         img.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`
     }, [scale, translateX, translateY])
 
-    const getCoordinates = (e) => {
+    const getImageCoordinates = (e) => {
         const img = gameAreaRef.current;
         const rect = img.getBoundingClientRect()
 
@@ -27,8 +31,52 @@ function Game() {
         const x = (e.clientX - rect.left) * scaleX;
         const y = (e.clientY - rect.top) * scaleY;
         
-        console.log(`Click coordinates: \nX: ${x} \nY: ${y}`);
+        //console.log(`Click coordinates: \nX: ${x} \nY: ${y}`);
         return [x, y]
+    }
+
+    const handleMouseDown = (e) => {
+        dragged.current = false
+        lastPositionRef.current = {
+          x: e.clientX,
+          y: e.clientY
+        };
+        draggableTimer.current = setTimeout(() => {
+            isHoldingRef.current = true;
+        }, 200)
+    }
+
+    const handleMouseUp = (e) => {
+        isHoldingRef.current = false;
+        clearTimeout(draggableTimer.current)
+        draggableTimer.current = null;
+        if (!dragged.current) {
+            let [x, y] = getImageCoordinates(e)
+            console.log(`Click coordinates: \nX: ${x} \nY: ${y}`);
+        }
+        dragged.current = false
+    }
+
+    const handleMouseLeave = (e) => {
+        isHoldingRef.current = false;
+        clearTimeout(draggableTimer.current)
+        draggableTimer.current = null;
+    }
+
+    const handleMouseMove = (e) => {
+        if(isHoldingRef.current) {
+            dragged.current = true
+            const deltaX = e.clientX - lastPositionRef.current.x;
+            const deltaY = e.clientY - lastPositionRef.current.y;
+            
+            setTranslateX(prev => prev + deltaX);
+            setTranslateY(prev => prev + deltaY);
+            
+            lastPositionRef.current = {
+              x: e.clientX,
+              y: e.clientY
+            };
+        }
     }
 
     const zoomIn = (e) => {
@@ -43,34 +91,24 @@ function Game() {
         }
     }
 
-    const moveLeft = (e) => {
-        setTranslateX(translateX + 10)
-    }
-
-    const moveRight = (e) => {
-        setTranslateX(translateX - 10)
-    }
-
-    const moveUp = (e) => {
-        setTranslateY(translateY + 10)
-    }
-
-    const moveDown = (e) => {
-        setTranslateY(translateY - 10)
-    }
-
 
     return (
         <>
-        <button onClick={moveLeft}>{'<= LEFT'}</button>
         <button onClick={zoomIn}>zoom in</button>
-        <button onClick={moveUp}>{'^ UP'}</button>
-        <button onClick={moveDown}>{'DOWN v'}</button>
         <button onClick={zoomOut}>zoom out</button>
-        <button onClick={moveRight}>{'RIGHT =>'}</button>
         <div className="img-container">
             <div className="img-wrapper">
-                <img ref={gameAreaRef} src={gameImage} alt="waldo game" className='game-img' onClick={getCoordinates} />
+                <img 
+                ref={gameAreaRef} 
+                src={gameImage} 
+                alt="waldo game" 
+                className='game-img' 
+                draggable={false}
+                onMouseDown={handleMouseDown}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseLeave}
+                onMouseMove={handleMouseMove}
+                 />
             </div>
         </div>
         </>
