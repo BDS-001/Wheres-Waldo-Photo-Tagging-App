@@ -17,11 +17,9 @@ function Game() {
     const SCALE_VAL = 0.1;
     const [minScale, setMIN_SCALE] = useState(0.2)
     const MAX_SCALE = 4;
+    const [offsetLimits, setOffsetLimits] = useState({xOffset: 0, yOffset: 0})
 
-    useEffect(() => {
-        const img = gameAreaRef.current
-        img.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`
-    }, [scale, translateX, translateY])
+    const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
     const calculaterMinScale = () => {
         const img = gameAreaRef.current;
@@ -36,6 +34,26 @@ function Game() {
     }
 
     useEffect(() => calculaterMinScale(), [])
+
+    useEffect(() => {
+        const img = gameAreaRef.current
+        img.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`
+    }, [scale, translateX, translateY])
+
+    useEffect(() => {
+        const img = gameAreaRef.current;
+        const container = imgContainerRef.current.getBoundingClientRect();
+        
+        // Calculate the scaled dimensions without translation influence
+        const scaledWidth = img.naturalWidth * scale;
+        const scaledHeight = img.naturalHeight * scale;
+        
+        // Calculate the limits based on scaled size vs container
+        const xOffset = Math.min(container.width - scaledWidth, 0);
+        const yOffset = Math.min(container.height - scaledHeight, 0);
+        
+        setOffsetLimits({xOffset, yOffset});
+    }, [scale])
 
     const getImageCoordinates = (e) => {
         const img = gameAreaRef.current;
@@ -90,8 +108,8 @@ function Game() {
             const deltaX = e.clientX - lastPositionRef.current.x;
             const deltaY = e.clientY - lastPositionRef.current.y;
             
-            setTranslateX(prev => prev + deltaX);
-            setTranslateY(prev => prev + deltaY);
+            setTranslateX(prev => clamp(prev + deltaX, offsetLimits.xOffset, 0));
+            setTranslateY(prev => clamp(prev + deltaY, offsetLimits.yOffset, 0));
             
             lastPositionRef.current = {
               x: e.clientX,
