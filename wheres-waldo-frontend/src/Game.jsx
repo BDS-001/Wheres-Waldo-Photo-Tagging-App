@@ -5,6 +5,7 @@ import AreaSelect from './AreaSelect'
 
 function Game() {
     const gameAreaRef = useRef(null)
+    const imgContainer = useRef(null)
     const isHoldingRef = useRef(false)
     const dragged = useRef(false)
     const draggableTimer = useRef(null)
@@ -13,14 +14,20 @@ function Game() {
     const [translateY, setTranslateY] = useState(0)
     const [select, setSelect] = useState({top: 0, left: 0, width: '50px', height:'50px', display: 'block'});
     const lastPositionRef = useRef({ x: 0, y: 0 })
-    const SCALE_VAL = 0.2
-    const MIN_SCALE = 0.5;
+    const SCALE_VAL = 0.1;
+    const MIN_SCALE = 0.2;
     const MAX_SCALE = 4;
 
     useEffect(() => {
         const img = gameAreaRef.current
         img.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`
     }, [scale, translateX, translateY])
+
+    const calculaterMinScale = () => {
+        const img = gameAreaRef.current;
+        const rect = img.getBoundingClientRect()
+        console.log(rect.width, rect.height)
+    }
 
     const getImageCoordinates = (e) => {
         const img = gameAreaRef.current;
@@ -38,6 +45,9 @@ function Game() {
     }
 
     const handleMouseDown = (e) => {
+        //left click only
+        if (e.button !== 0) return
+
         dragged.current = false
         lastPositionRef.current = {
           x: e.clientX,
@@ -99,7 +109,8 @@ function Game() {
         <>
         <button onClick={zoomIn}>zoom in</button>
         <button onClick={zoomOut}>zoom out</button>
-        <div className="img-container">
+        <button onClick={calculaterMinScale}>log</button>
+        <div className="img-container" ref={imgContainer}>
             <div className="img-wrapper">
                 <img 
                 ref={gameAreaRef} 
