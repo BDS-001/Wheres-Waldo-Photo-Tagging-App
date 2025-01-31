@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { useEffect, useRef, useState } from 'react';
 import gameImage from './assets/testImage.png'
+import AreaSelect from './AreaSelect'
 
 function Game() {
     const gameAreaRef = useRef(null)
@@ -10,6 +11,7 @@ function Game() {
     const [scale, setScale] = useState(1)
     const [translateX, setTranslateX] = useState(0)
     const [translateY, setTranslateY] = useState(0)
+    const [select, setSelect] = useState({top: 0, left: 0, width: '50px', height:'50px', display: 'block'});
     const lastPositionRef = useRef({ x: 0, y: 0 })
     const SCALE_VAL = 0.2
     const MIN_SCALE = 0.5;
@@ -52,6 +54,7 @@ function Game() {
         draggableTimer.current = null;
         if (!dragged.current) {
             let [x, y] = getImageCoordinates(e)
+            setSelect({top: lastPositionRef.current.y - 50, left: lastPositionRef.current.x - 30, display: 'block'})
             console.log(`Click coordinates: \nX: ${x} \nY: ${y}`);
         }
         dragged.current = false
@@ -109,6 +112,7 @@ function Game() {
                 onMouseLeave={handleMouseLeave}
                 onMouseMove={handleMouseMove}
                  />
+                <AreaSelect position={select} />
             </div>
         </div>
         </>
