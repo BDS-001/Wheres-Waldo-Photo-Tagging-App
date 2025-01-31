@@ -5,17 +5,17 @@ import AreaSelect from './AreaSelect'
 
 function Game() {
     const gameAreaRef = useRef(null)
-    const imgContainer = useRef(null)
+    const imgContainerRef = useRef(null)
     const isHoldingRef = useRef(false)
     const dragged = useRef(false)
     const draggableTimer = useRef(null)
-    const [scale, setScale] = useState(1)
+    const [scale, setScale] = useState(0.1)
     const [translateX, setTranslateX] = useState(0)
     const [translateY, setTranslateY] = useState(0)
     const [select, setSelect] = useState({top: 0, left: 0, width: '50px', height:'50px', display: 'block'});
     const lastPositionRef = useRef({ x: 0, y: 0 })
     const SCALE_VAL = 0.1;
-    const MIN_SCALE = 0.2;
+    const [minScale, setMIN_SCALE] = useState(0.2)
     const MAX_SCALE = 4;
 
     useEffect(() => {
@@ -25,9 +25,17 @@ function Game() {
 
     const calculaterMinScale = () => {
         const img = gameAreaRef.current;
-        const rect = img.getBoundingClientRect()
-        console.log(rect.width, rect.height)
+        const container = imgContainerRef.current.getBoundingClientRect()
+        const scaleX = container.width / img.naturalWidth;
+        const scaleY = container.height / img.naturalHeight;
+        
+        const min = Math.max(scaleX, scaleY)
+        
+        setMIN_SCALE(min)
+        setScale(min)
     }
+
+    useEffect(() => calculaterMinScale(), [])
 
     const getImageCoordinates = (e) => {
         const img = gameAreaRef.current;
@@ -95,12 +103,14 @@ function Game() {
     const zoomIn = (e) => {
         if (scale < MAX_SCALE) {
             setScale(scale + SCALE_VAL)
+            console.log('scale:', scale, 'min:', minScale)
         }
     }
 
     const zoomOut = (e) => {
-        if (scale > MIN_SCALE) {
+        if (scale > minScale) {
             setScale(scale - SCALE_VAL)
+            console.log('scale:', scale, 'min:', minScale)
         }
     }
 
@@ -110,7 +120,7 @@ function Game() {
         <button onClick={zoomIn}>zoom in</button>
         <button onClick={zoomOut}>zoom out</button>
         <button onClick={calculaterMinScale}>log</button>
-        <div className="img-container" ref={imgContainer}>
+        <div className="img-container" ref={imgContainerRef}>
             <div className="img-wrapper">
                 <img 
                 ref={gameAreaRef} 

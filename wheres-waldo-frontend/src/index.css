@@ -21,6 +21,7 @@ canvas {
   height: 600px;
   position: relative;
   overflow: hidden;
+  border: 2px solid black;
 }
 
 .img-wrapper {
