@@ -12,7 +12,7 @@ function Game() {
     const [scale, setScale] = useState(0.1)
     const [translateX, setTranslateX] = useState(0)
     const [translateY, setTranslateY] = useState(0)
-    const [select, setSelect] = useState({top: 0, left: 0, width: '50px', height:'50px', display: 'block'});
+    const [select, setSelect] = useState({top: 0, left: 0, width: '50px', height:'50px', display: 'none'});
     const lastPositionRef = useRef({ x: 0, y: 0 })
     const SCALE_VAL = 0.1;
     const [minScale, setMIN_SCALE] = useState(0.2)
@@ -81,6 +81,7 @@ function Game() {
         };
         draggableTimer.current = setTimeout(() => {
             isHoldingRef.current = true;
+            setSelect(prev => ({...prev, display: 'none'}))
         }, 200)
     }
 
