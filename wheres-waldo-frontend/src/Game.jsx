@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import gameImage from './assets/testImage.png'
 import AreaSelect from './AreaSelect'
 
@@ -20,6 +20,13 @@ function Game() {
     const [offsetLimits, setOffsetLimits] = useState({xOffset: 0, yOffset: 0})
 
     const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
+    const updatePosition = useCallback((valX, valY) => {
+        setTranslateX(prev => clamp(prev + valX, offsetLimits.xOffset, 0));
+        setTranslateY(prev => clamp(prev + valY, offsetLimits.yOffset, 0));
+    }, [offsetLimits])
+
+    useEffect(() => updatePosition(0,0), [offsetLimits, updatePosition])
 
     const calculaterMinScale = () => {
         const img = gameAreaRef.current;
@@ -108,9 +115,8 @@ function Game() {
             dragged.current = true
             const deltaX = e.clientX - lastPositionRef.current.x;
             const deltaY = e.clientY - lastPositionRef.current.y;
-            
-            setTranslateX(prev => clamp(prev + deltaX, offsetLimits.xOffset, 0));
-            setTranslateY(prev => clamp(prev + deltaY, offsetLimits.yOffset, 0));
+
+            updatePosition(deltaX, deltaY)
             
             lastPositionRef.current = {
               x: e.clientX,
