@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { useCallback, useEffect, useRef, useState } from 'react';
-import gameImage from './assets/testImage.png'
+import gameImage from './assets/waldogame.png'
 import AreaSelect from './AreaSelect'
 
 function Game() {
@@ -15,8 +15,8 @@ function Game() {
     const [select, setSelect] = useState({top: 0, left: 0, width: '50px', height:'50px', display: 'none'});
     const lastPositionRef = useRef({ x: 0, y: 0 })
     const SCALE_VAL = 0.1;
-    const [minScale, setMIN_SCALE] = useState(0.2)
-    const MAX_SCALE = 4;
+    const [minScale, setMinScale] = useState(0.2)
+    const [maxScale, setMaxScale] = useState(4);
     const [offsetLimits, setOffsetLimits] = useState({xOffset: 0, yOffset: 0})
 
     const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
@@ -28,7 +28,7 @@ function Game() {
 
     useEffect(() => updatePosition(0,0), [offsetLimits, updatePosition])
 
-    const calculaterMinScale = () => {
+    const calculaterScaleValues = () => {
         const img = gameAreaRef.current;
         const container = imgContainerRef.current.getBoundingClientRect()
         const scaleX = container.width / img.naturalWidth;
@@ -36,11 +36,12 @@ function Game() {
         
         const min = Math.max(scaleX, scaleY)
         
-        setMIN_SCALE(min)
+        setMinScale(min)
+        setMaxScale(min + (SCALE_VAL * 5))
         setScale(min)
     }
 
-    useEffect(() => calculaterMinScale(), [])
+    useEffect(() => calculaterScaleValues(), [])
 
     useEffect(() => {
         const img = gameAreaRef.current
@@ -126,16 +127,18 @@ function Game() {
     }
 
     const zoomIn = (e) => {
-        if (scale < MAX_SCALE) {
-            setScale(scale + SCALE_VAL)
-            console.log('scale:', scale, 'min:', minScale)
+        const newScale = Math.min(scale + SCALE_VAL, maxScale);
+        if (newScale !== scale) {
+            setScale(newScale)
+            console.log('ZOOM IN ','scale:', scale, 'min:', minScale)
         }
     }
 
     const zoomOut = (e) => {
-        if (scale > minScale) {
-            setScale(scale - SCALE_VAL)
-            console.log('scale:', scale, 'min:', minScale)
+        const newScale = Math.max(scale - SCALE_VAL, minScale);
+        if (newScale !== scale) {
+            setScale(newScale)
+            console.log('ZOOM IN ','scale:', scale, 'min:', minScale)
         }
     }
 
@@ -144,7 +147,6 @@ function Game() {
         <>
         <button onClick={zoomIn}>zoom in</button>
         <button onClick={zoomOut}>zoom out</button>
-        <button onClick={calculaterMinScale}>log</button>
         <div className="img-container" ref={imgContainerRef}>
             <div className="img-wrapper">
                 <img 
