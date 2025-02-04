@@ -99,7 +99,16 @@ function Game() {
         draggableTimer.current = null;
         if (!dragged.current) {
             let [x, y] = getImageCoordinates(e)
-            setSelect({top: lastPositionRef.current.y - 50, left: lastPositionRef.current.x - 30, display: 'block'})
+            const rect = imgContainerRef.current.getBoundingClientRect();
+        
+            const relativeX = e.clientX - rect.left;
+            const relativeY = e.clientY - rect.top;
+            
+            setSelect({
+                top: relativeY,
+                left: relativeX,
+                display: 'block'
+            });
             console.log(`Click coordinates: \nX: ${x} \nY: ${y}`);
         }
         dragged.current = false
@@ -145,8 +154,10 @@ function Game() {
 
     return (
         <>
-        <button onClick={zoomIn}>zoom in</button>
-        <button onClick={zoomOut}>zoom out</button>
+        <div className="game-controls">
+            <button onClick={zoomIn}>zoom in</button>
+            <button onClick={zoomOut}>zoom out</button>
+        </div>
         <div className="img-container" ref={imgContainerRef}>
             <div className="img-wrapper">
                 <img 
