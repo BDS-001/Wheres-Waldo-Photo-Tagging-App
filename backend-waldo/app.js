@@ -2,6 +2,7 @@ require('dotenv').config
 const express = require('express')
 const app  = express()
 const cors = require('cors');
+require('./config/passport.js')
 
 // --- Route Imports ---
 const apiRouter = require('./routes/apiRouterV1.js')
