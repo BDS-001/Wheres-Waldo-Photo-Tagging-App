@@ -7,6 +7,7 @@ const AreaSelect = ({ position }) => {
           top: `${position.top}px`,
           left: `${position.left}px`,
           display: `${position.display}`,
+          transform: `translate(-50%, -50%) scale(${position.scale})`,
           position: 'absolute'
         }}
       />

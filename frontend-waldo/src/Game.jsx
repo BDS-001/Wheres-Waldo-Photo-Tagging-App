@@ -12,7 +12,7 @@ function Game() {
     const [scale, setScale] = useState(0.1)
     const [translateX, setTranslateX] = useState(0)
     const [translateY, setTranslateY] = useState(0)
-    const [select, setSelect] = useState({top: 0, left: 0, width: '50px', height:'50px', display: 'none'});
+    const [select, setSelect] = useState({top: 0, left: 0, width: '50px', height:'50px', display: 'none', scale: '1'});
     const lastPositionRef = useRef({ x: 0, y: 0 })
     const SCALE_VAL = 0.1;
     const [minScale, setMinScale] = useState(0.2)
@@ -61,7 +61,12 @@ function Game() {
         const yOffset = Math.min(container.height - scaledHeight, 0);
         
         setOffsetLimits({xOffset, yOffset});
+        setSelect(prev => ({...prev, scale:scale}))
     }, [scale])
+
+    useEffect(() => {
+        setSelect(prev => ({...prev, display: 'none'}))
+    }, [scale, translateX, translateY])
 
     const getImageCoordinates = (e) => {
         const img = gameAreaRef.current;
@@ -118,7 +123,6 @@ Original Image Y: ${y.toFixed(2)}
         };
         draggableTimer.current = setTimeout(() => {
             isHoldingRef.current = true;
-            setSelect(prev => ({...prev, display: 'none'}))
         }, 200)
     }
 
@@ -133,11 +137,12 @@ Original Image Y: ${y.toFixed(2)}
             const relativeX = e.clientX - rect.left;
             const relativeY = e.clientY - rect.top;
             
-            setSelect({
+            setSelect(prev => ({
+                ...prev,
                 top: relativeY,
                 left: relativeX,
                 display: 'block'
-            });
+            }));
             console.log(`Click coordinates: \nX: ${x} \nY: ${y}`);
         }
         dragged.current = false
