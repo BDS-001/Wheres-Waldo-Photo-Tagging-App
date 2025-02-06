@@ -1,7 +1,8 @@
 const activeGames = new Map()
 
-const game = () => {
+const game = (playerName) => {
     const startTime = Date.now()
+    const playerName = playerName
     let lastActivity = startTime
     let complete = false
     let finalTime = null
@@ -17,6 +18,7 @@ const game = () => {
 
     return {
         get startTime() {return startTime},
+        get playerName() {return playerName},
         get lastActivity() {return lastActivity},
         get complete() {return complete},
         get finalTime() {return finalTime},
@@ -37,8 +39,8 @@ setInterval(() => {
 
 function startGame(req, res) {
     const sessionId = req.sessionId
-    if (activeGames.has(sessionId)) activeGames.set(sessionId, game())
-    activeGames.set(sessionId, game())
+    const playerName = req.body.playerName
+    activeGames.set(sessionId, game(playerName))
     res.json({ message: 'Game started' });
 }
 
