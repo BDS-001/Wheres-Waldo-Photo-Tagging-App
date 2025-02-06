@@ -70,7 +70,7 @@ button:active {
   pointer-events: none;
   animation: pulse 1s infinite;
   z-index: 1;  
-  box-shadow: 0 0 0 999px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
 }
 
 @keyframes pulse {
