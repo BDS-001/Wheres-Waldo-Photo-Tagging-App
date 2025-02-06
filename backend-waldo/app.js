@@ -15,6 +15,15 @@ app.use(cors({
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
+app.use(session({
+    secret: 'your-secret-key',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { 
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 30 * 60 * 1000
+    }
+}));
 
 // --- Routes ---
 app.use('/api/v1', apiRouter);
