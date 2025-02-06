@@ -4,69 +4,40 @@ import gameImage from './assets/waldogame.png'
 import AreaSelect from './AreaSelect'
 
 function Game() {
+    // Refs for DOM elements and interaction states
     const gameAreaRef = useRef(null)
     const imgContainerRef = useRef(null)
     const isHoldingRef = useRef(false)
     const dragged = useRef(false)
     const draggableTimer = useRef(null)
+    const lastPositionRef = useRef({ x: 0, y: 0 })
+
+    // State for image transformation
     const [scale, setScale] = useState(0.1)
     const [translateX, setTranslateX] = useState(0)
     const [translateY, setTranslateY] = useState(0)
-    const [select, setSelect] = useState({top: 0, left: 0, width: '50px', height:'50px', display: 'none', scale: '1'});
-    const lastPositionRef = useRef({ x: 0, y: 0 })
+    const [select, setSelect] = useState({
+        top: 0, 
+        left: 0, 
+        width: '50px', 
+        height:'50px', 
+        display: 'none', 
+        scale: '1'
+    });
+
+    // Constants and constraints
     const SCALE_VAL = 0.1;
     const [minScale, setMinScale] = useState(0.2)
     const [maxScale, setMaxScale] = useState(4);
     const [offsetLimits, setOffsetLimits] = useState({xOffset: 0, yOffset: 0})
 
+    //General Functions
     const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
-
+ 
     const updatePosition = useCallback((valX, valY) => {
         setTranslateX(prev => clamp(prev + valX, offsetLimits.xOffset, 0));
         setTranslateY(prev => clamp(prev + valY, offsetLimits.yOffset, 0));
     }, [offsetLimits])
-
-    useEffect(() => updatePosition(0,0), [offsetLimits, updatePosition])
-
-    const calculaterScaleValues = () => {
-        const img = gameAreaRef.current;
-        const container = imgContainerRef.current.getBoundingClientRect()
-        const scaleX = container.width / img.naturalWidth;
-        const scaleY = container.height / img.naturalHeight;
-        
-        const min = Math.max(scaleX, scaleY)
-        
-        setMinScale(min)
-        setMaxScale(min + (SCALE_VAL * 5))
-        setScale(min)
-    }
-
-    useEffect(() => calculaterScaleValues(), [])
-
-    useEffect(() => {
-        const img = gameAreaRef.current
-        img.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`
-    }, [scale, translateX, translateY])
-
-    useEffect(() => {
-        const img = gameAreaRef.current;
-        const container = imgContainerRef.current.getBoundingClientRect();
-        
-        // Calculate the scaled dimensions without translation influence
-        const scaledWidth = img.naturalWidth * scale;
-        const scaledHeight = img.naturalHeight * scale;
-        
-        // Calculate the limits based on scaled size vs container
-        const xOffset = Math.min(container.width - scaledWidth, 0);
-        const yOffset = Math.min(container.height - scaledHeight, 0);
-        
-        setOffsetLimits({xOffset, yOffset});
-        setSelect(prev => ({...prev, scale:scale}))
-    }, [scale])
-
-    useEffect(() => {
-        setSelect(prev => ({...prev, display: 'none'}))
-    }, [scale, translateX, translateY])
 
     const getImageCoordinates = (e) => {
         const img = gameAreaRef.current;
@@ -75,7 +46,6 @@ function Game() {
         const scaleX = img.naturalWidth / rect.width;
         const scaleY = img.naturalHeight / rect.height;
         
-        // Get the click position relative to the canvas and adjust for scaling
         const x = (e.clientX - rect.left) * scaleX;
         const y = (e.clientY - rect.top) * scaleY;
         
@@ -112,6 +82,54 @@ Original Image Y: ${y.toFixed(2)}
         return [x, y]
     }
 
+    // Effect 1: Initial setup - Calculate initial scale values
+    useEffect(() => {
+        const calculaterScaleValues = () => {
+            const img = gameAreaRef.current;
+            const container = imgContainerRef.current.getBoundingClientRect()
+            const scaleX = container.width / img.naturalWidth;
+            const scaleY = container.height / img.naturalHeight;
+            
+            const min = Math.max(scaleX, scaleY)
+            
+            setMinScale(min)
+            setMaxScale(min + (SCALE_VAL * 5))
+            setScale(min)
+        }
+        calculaterScaleValues()
+    }, [])
+
+    // Effect 2: Update transform when scale or position changes
+    useEffect(() => {
+        const img = gameAreaRef.current
+        img.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`
+    }, [scale, translateX, translateY])
+
+    // Effect 3: Update offset limits and selection scale when scale changes
+    useEffect(() => {
+        const img = gameAreaRef.current;
+        const container = imgContainerRef.current.getBoundingClientRect();
+        
+        // Calculate the scaled dimensions without translation influence
+        const scaledWidth = img.naturalWidth * scale;
+        const scaledHeight = img.naturalHeight * scale;
+        
+        // Calculate the limits based on scaled size vs container
+        const xOffset = Math.min(container.width - scaledWidth, 0);
+        const yOffset = Math.min(container.height - scaledHeight, 0);
+        
+        setOffsetLimits({xOffset, yOffset});
+        setSelect(prev => ({...prev, scale:scale}))
+    }, [scale])
+
+    // Effect 4: Reset selection display when transform changes
+    useEffect(() => {
+        setSelect(prev => ({...prev, display: 'none'}))
+    }, [scale, translateX, translateY]);
+
+    // Effect 5: Update position when offset limits change
+    useEffect(() => updatePosition(0,0), [offsetLimits, updatePosition])
+
     const handleMouseDown = (e) => {
         //left click only
         if (e.button !== 0) return
@@ -126,6 +144,8 @@ Original Image Y: ${y.toFixed(2)}
         }, 200)
     }
 
+
+    //Event Functions
     const handleMouseUp = (e) => {
         isHoldingRef.current = false;
         clearTimeout(draggableTimer.current)
