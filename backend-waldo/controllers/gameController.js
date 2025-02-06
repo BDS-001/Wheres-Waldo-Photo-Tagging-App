@@ -12,7 +12,7 @@ const game = () => {
 
     const endGame = () => {
         complete = true
-        completeTime = Date.now() - startTime
+        finalTime = Date.now() - startTime
     }
 
     return {
