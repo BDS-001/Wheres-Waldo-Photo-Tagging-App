@@ -93,7 +93,7 @@ Original Image Y: ${y.toFixed(2)}
             const min = Math.max(scaleX, scaleY)
             
             setMinScale(min)
-            setMaxScale(min + (SCALE_VAL * 5))
+            setMaxScale(min + (SCALE_VAL * 6))
             setScale(min)
         }
         calculaterScaleValues()
