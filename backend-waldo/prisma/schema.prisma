@@ -12,3 +12,35 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Level {
+  id        Int         @id @default(autoincrement())
+  title     String
+  imageUrl  String
+  difficulty String?
+  characters CharacterLocation[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model Character {
+  id        Int         @id @default(autoincrement())
+  name      String      @unique
+  locations CharacterLocation[]
+}
+
+model CharacterLocation {
+  id          Int       @id @default(autoincrement())
+  level       Level     @relation(fields: [levelId], references: [id])
+  levelId     Int
+  character   Character @relation(fields: [characterId], references: [id])
+  characterId Int
+
+  // Box coordinates
+  x          Float     // top-left x coordinate
+  y          Float     // top-left y coordinate
+  width      Float     // box width
+  height     Float     // box height
+  
+  @@unique([levelId, characterId])
+}
