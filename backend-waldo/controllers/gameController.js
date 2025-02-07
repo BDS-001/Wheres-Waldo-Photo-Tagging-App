@@ -1,8 +1,8 @@
 const activeGames = new Map()
 
-const game = (playerName) => {
+const game = (playerSelectedName) => {
     const startTime = Date.now()
-    const playerName = playerName
+    const playerName = playerSelectedName
     let lastActivity = startTime
     let complete = false
     let finalTime = null

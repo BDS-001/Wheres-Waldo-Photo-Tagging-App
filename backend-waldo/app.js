@@ -1,9 +1,8 @@
-require('dotenv').config
+require('dotenv').config()
 const express = require('express')
 const session = require('express-session');
 const app  = express()
 const cors = require('cors');
-require('./config/passport.js')
 
 // --- Route Imports ---
 const apiRouter = require('./routes/apiRouterV1.js')
@@ -11,13 +10,15 @@ const apiRouter = require('./routes/apiRouterV1.js')
 // --- Middleware Setup ---
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use('/images', express.static('public/images'));
 app.use(cors({
     origin: 'http://localhost:5173',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
 app.use(session({
-    secret: 'your-secret-key',
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
     cookie: { 
