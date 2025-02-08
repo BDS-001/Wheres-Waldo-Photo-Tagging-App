@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import gameImage from '../assets/waldogame.png';
 import AreaSelect from './AreaSelect';
 import { useImageTransform } from '../hooks/useImageTransform';
@@ -10,19 +10,31 @@ function Game() {
     const gameAreaRef = useRef(null);
     const imgContainerRef = useRef(null);
     const [loading, setLoading] = useState(true)
-    setTimeout(() => {
-        setLoading(false)
-        console.log("Timer finished!");
-    }, 5000);
 
-    const { scale, updatePosition, zoomIn, zoomOut } = useImageTransform(gameAreaRef, imgContainerRef);
+    useEffect(() => {
+        setTimeout(() => {
+            setLoading(false)
+            console.log("Timer finished!");
+        }, 5000);
+    }, [])
+
+    const { 
+        scale, 
+        translateX, 
+        translateY, 
+        updatePosition, 
+        zoomIn, 
+        zoomOut 
+    } = useImageTransform(gameAreaRef, imgContainerRef);
+
     const {
         select,
         handleMouseDown,
         handleMouseUp,
         handleMouseLeave,
         handleMouseMove
-    } = useImageInteraction(updatePosition, scale);
+    } = useImageInteraction(updatePosition, scale, translateX, translateY, gameAreaRef);
+
 
     return (
         <>
