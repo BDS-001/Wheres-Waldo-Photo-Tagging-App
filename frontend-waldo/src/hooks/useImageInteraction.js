@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from 'react';
 
-export const useImageInteraction = (updatePosition, scale, translateX, translateY, gameAreaRef) => {
+export const useImageInteraction = (updatePosition, scale, translateX, translateY, gameAreaRef, imgContainerRef) => {
     const isHoldingRef = useRef(false);
     const dragged = useRef(false);
     const draggableTimer = useRef(null);
@@ -82,7 +82,7 @@ Original Image Y: ${y.toFixed(2)}
         draggableTimer.current = null;
         if (!dragged.current) {
             const [x, y] = getImageCoordinates(e);
-            const rect = e.currentTarget.getBoundingClientRect();
+            const rect = imgContainerRef.current.getBoundingClientRect();
             const relativeX = e.clientX - rect.left;
             const relativeY = e.clientY - rect.top;
             
@@ -102,7 +102,6 @@ Original Image Y: ${y.toFixed(2)}
         isHoldingRef.current = false;
         clearTimeout(draggableTimer.current);
         draggableTimer.current = null;
-        setSelect(prev => ({...prev, display: 'none'}));
     };
 
     const handleMouseMove = (e) => {

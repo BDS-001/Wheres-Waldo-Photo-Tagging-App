@@ -33,7 +33,7 @@ function Game() {
         handleMouseUp,
         handleMouseLeave,
         handleMouseMove
-    } = useImageInteraction(updatePosition, scale, translateX, translateY, gameAreaRef);
+    } = useImageInteraction(updatePosition, scale, translateX, translateY, gameAreaRef,imgContainerRef);
 
 
     return (
