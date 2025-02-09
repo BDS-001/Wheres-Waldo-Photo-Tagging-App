@@ -1,7 +1,7 @@
 const prisma = require('../prismaClient')
 
-function getCharacterLocation(characterId, levelId) {
-    return prisma.CharacterLocation.findUnique({
+async function getCharacterLocation(characterId, levelId) {
+    return await prisma.CharacterLocation.findUnique({
         where: {
             characterId,
             levelId

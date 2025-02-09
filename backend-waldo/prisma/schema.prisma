@@ -14,13 +14,15 @@ datasource db {
 }
 
 model Level {
-  id        Int         @id @default(autoincrement())
-  title     String
-  imageUrl  String
-  difficulty String?
-  characters CharacterLocation[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  id           Int                @id @default(autoincrement())
+  levelNum     Int
+  title        String
+  imageUrl     String
+  difficulty   String?
+  characters   CharacterLocation[]
+  leaderboard  LeaderboardEntry[] // Add this line
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
 }
 
 model Character {
@@ -43,4 +45,17 @@ model CharacterLocation {
   height     Float     // box height
   
   @@unique([levelId, characterId])
+}
+
+model LeaderboardEntry {
+  id          Int      @id @default(autoincrement())
+  playerName  String   // Arcade-style name entry
+  level       Level    @relation(fields: [levelId], references: [id])
+  levelId     Int
+  timeSeconds Float    // Completion time in seconds
+  score       Int      // Optional scoring system
+  createdAt   DateTime @default(now())
+
+  @@index([levelId, score]) // Index for faster leaderboard queries
+  @@index([playerName]) // Index for player name searches
 }
