@@ -8,3 +8,7 @@ async function getCharacterLocation(characterId, levelId) {
         }
     })
 }
+
+module.exports = {
+    getCharacterLocation
+}
