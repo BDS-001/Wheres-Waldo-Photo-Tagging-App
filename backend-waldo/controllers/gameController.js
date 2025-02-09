@@ -1,3 +1,4 @@
+const gameDb = require('../prisma/queries/gameQueries')
 const activeGames = new Map()
 
 const game = (playerSelectedName) => {
@@ -65,6 +66,13 @@ function endGame(req, res) {
     //TODO: add game data to database
     res.json({ message: 'Game complete', finalTime: game.finalTime });
     activeGames.delete(sessionId)
+}
+
+async function makeGuess(req, res) {
+    const levelId = req.body.levelId
+    const characterId = req.body.levelId
+    const selectionData = req.body.selection
+    const characterLocation = await gameDb.getCharacterLocation(characterId, levelId)
 }
 
 module.exports = {
