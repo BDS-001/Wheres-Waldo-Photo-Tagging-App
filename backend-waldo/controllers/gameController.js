@@ -1,4 +1,5 @@
 const gameDb = require('../prisma/queries/gameQueries')
+const {calculateOverlap} = require('../utils/areaCalculations')
 const activeGames = new Map()
 
 const game = (playerSelectedName) => {
@@ -69,14 +70,21 @@ function endGame(req, res) {
 }
 
 async function makeGuess(req, res) {
+    const MIN_ACCURACY = 70
     const levelId = req.body.levelId
+    if (!levelId) res.status(400).json({ error: 'invalid level id' });
     const characterId = req.body.levelId
+    if (!characterId) res.status(400).json({ error: 'invalid character id' });
+
     const selectionData = req.body.selection
     const characterLocation = await gameDb.getCharacterLocation(characterId, levelId)
+    const overlapPrecentage = calculateOverlap(selectionData, characterLocation)
+    res.json({result: overlapPrecentage >= MIN_ACCURACY ? 'success' : 'fail'})
 }
 
 module.exports = {
     startGame,
     heartbeat,
-    endGame
+    endGame,
+    makeGuess
 }
