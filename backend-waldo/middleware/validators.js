@@ -37,7 +37,7 @@ const validateGuess = [
           throw new Error('selection must contain valid x, y, width, and height values');
         }
   
-        if (value[width] <= 0 || value[height] <= 0) {
+        if (value['width'] <= 0 || value['height'] <= 0) {
           throw new Error('width and height must be positive numbers');
         }
   
