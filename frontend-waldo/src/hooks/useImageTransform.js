@@ -7,6 +7,7 @@ export const useImageTransform = (gameAreaRef, imgContainerRef, SCALE_VAL = 0.1)
     const [minScale, setMinScale] = useState(0.2);
     const [maxScale, setMaxScale] = useState(4);
     const [offsetLimits, setOffsetLimits] = useState({ xOffset: 0, yOffset: 0 });
+    const [windowResizeSwitch, setWindowResizeSwitch] = useState(false)
 
     const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
@@ -14,6 +15,19 @@ export const useImageTransform = (gameAreaRef, imgContainerRef, SCALE_VAL = 0.1)
         setTranslateX(prev => clamp(prev + valX, offsetLimits.xOffset, 0));
         setTranslateY(prev => clamp(prev + valY, offsetLimits.yOffset, 0));
     }, [offsetLimits]);
+
+    useEffect(() => {
+        const handleResize = () => {
+          setWindowResizeSwitch(prev => !prev)
+        };
+    
+        window.addEventListener('resize', handleResize);
+        
+        // Cleanup
+        return () => {
+          window.removeEventListener('resize', handleResize);
+        };
+      }, []);
 
     // Calculate initial scale values
     useEffect(() => {
@@ -49,7 +63,7 @@ export const useImageTransform = (gameAreaRef, imgContainerRef, SCALE_VAL = 0.1)
         const yOffset = Math.min(container.height - scaledHeight, 0);
         
         setOffsetLimits({ xOffset, yOffset });
-    }, [scale, gameAreaRef, imgContainerRef]);
+    }, [scale, gameAreaRef, imgContainerRef, windowResizeSwitch]);
 
     // Update position when offset limits change
     useEffect(() => updatePosition(0, 0), [offsetLimits, updatePosition]);
