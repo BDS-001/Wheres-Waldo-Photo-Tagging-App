@@ -1,4 +1,4 @@
-export function calculateOverlap(rect1, rect2) {
+function calculateOverlap(rect1, rect2) {
     //rect 1 larger than rect 2
     const { x: x1, y: y1, width: w1, height: h1 } = rect1
     const { x: x2, y: y2, width: w2, height: h2 } = rect2
