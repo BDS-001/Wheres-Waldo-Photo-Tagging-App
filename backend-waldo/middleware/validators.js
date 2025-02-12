@@ -45,10 +45,28 @@ const validateGuess = [
         return ({x, y, width, height} = value);
       }),
   ];
+
+  const leaderboardEntryValidators = [
+    body('playerName')
+      .trim()
+      .isLength({ min: 1, max: 20 })
+      .withMessage('Player name must be between 1 and 20 characters')
+      .matches(/^[A-Za-z0-9]+$/)
+      .withMessage('Player name can only contain letters and numbers'),
+  
+    body('levelId')
+      .isInt({ min: 1 })
+      .withMessage('Level ID must be a positive integer'),
+  
+    body('timeSeconds')
+      .isFloat({ min: 0 })
+      .withMessage('Time must be a positive number')
+  ];
   
   // Collection of all validators
   const validators = {
     guess: validateGuess,
+    loaderboard: leaderboardEntryValidators,
 
   };
   
