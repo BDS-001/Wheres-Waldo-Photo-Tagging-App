@@ -51,8 +51,8 @@ const validateGuess = [
       .trim()
       .isLength({ min: 1, max: 20 })
       .withMessage('Player name must be between 1 and 20 characters')
-      .matches(/^[A-Za-z0-9]+$/)
-      .withMessage('Player name can only contain letters and numbers'),
+      .matches(/^[A-Za-z0-9 -_]+$/)
+      .withMessage('Player name can only contain letters, numbers, spaces, underscores, hyphens'),
   
     body('levelId')
       .isInt({ min: 1 })
