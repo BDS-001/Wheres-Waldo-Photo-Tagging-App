@@ -25,7 +25,27 @@ async function addLeaderboardEntry({playerName, levelId, timeSeconds}) {
     })
 }
 
+async function getCharactersFromLevel(levelId) {
+    return await prisma.Level.findUnique({
+      where: {
+        id: levelId
+      },
+      select: {
+        characters: {
+          select: {
+            x: true,
+            y: true,
+            width: true,
+            height: true,
+            character: true
+          }
+        }
+      }
+    })
+  }
+
 module.exports = {
     getCharacterLocation,
-    addLeaderboardEntry
+    addLeaderboardEntry,
+    getCharactersFromLevel
 }

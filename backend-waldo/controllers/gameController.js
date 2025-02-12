@@ -2,9 +2,10 @@ const gameDb = require('../prisma/queries/gameQueries')
 const {calculateOverlap} = require('../utils/areaCalculations')
 const activeGames = new Map()
 
-const game = (playerSelectedName) => {
+const game = (playerSelectedName, characters) => {
     const startTime = Date.now()
     const playerName = playerSelectedName
+    const characters = characters
     let lastActivity = startTime
     let complete = false
     let finalTime = null
@@ -39,11 +40,18 @@ setInterval(() => {
     }
 }, activeGameCheck)
 
-function startGame(req, res) {
+async function startGame(req, res) {
     const sessionId = req.sessionId
     const playerName = req.body.playerName
-    activeGames.set(sessionId, game(playerName))
-    res.json({ message: 'Game started' });
+    const levelId = req.body.levelId
+
+    let characters = await gameDb.getCharactersFromLevel(levelId)
+    characters = characters.characters.map(char => ({
+      ...char,
+      found: false
+    }));
+    activeGames.set(sessionId, game(playerName, characters ))
+    res.json({ message: 'Game started', playerName, characters });
 }
 
 function heartbeat(req, res) {
