@@ -53,9 +53,8 @@ model LeaderboardEntry {
   level       Level    @relation(fields: [levelId], references: [id])
   levelId     Int
   timeSeconds Float    // Completion time in seconds
-  score       Int      // Optional scoring system
   createdAt   DateTime @default(now())
 
-  @@index([levelId, score]) // Index for faster leaderboard queries
+  @@index([levelId, timeSeconds]) // Index for faster leaderboard queries
   @@index([playerName]) // Index for player name searches
 }

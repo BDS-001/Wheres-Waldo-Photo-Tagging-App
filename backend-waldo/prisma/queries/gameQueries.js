@@ -15,6 +15,17 @@ async function getCharacterLocation(characterId, levelId) {
     })
 }
 
+async function addLeaderboardEntry({playerName, levelId, timeSeconds}) {
+    return await prisma.LeaderboardEntry.create({
+        data: {
+            playerName,
+            levelId,
+            timeSeconds
+        }
+    })
+}
+
 module.exports = {
-    getCharacterLocation
+    getCharacterLocation,
+    addLeaderboardEntry
 }
