@@ -41,59 +41,95 @@ setInterval(() => {
 }, activeGameCheck)
 
 async function startGame(req, res) {
-    const sessionId = req.sessionId
-    const playerName = req.body.playerName
-    const levelId = req.body.levelId
-
-    let characters = await gameDb.getCharactersFromLevel(levelId)
-    characters = characters.characters.map(char => ({
-      ...char,
-      found: false
-    }));
-    activeGames.set(sessionId, game(playerName, characters ))
-    res.json({ message: 'Game started', playerName, characters });
-}
-
-function heartbeat(req, res) {
-    const sessionId = req.sessionId
-    const game = activeGames.get(sessionId)
-
-    if (!game || game.complete) {
-        return res.status(400).json({ error: 'No active game found' });
+    try {
+      const { sessionId } = req
+      const { playerName, levelId } = req.body
+  
+      let characters = await gameDb.getCharactersFromLevel(levelId)
+      if (!characters) {
+        return res.status(404).json({ error: 'Level not found' })
+      }
+  
+      characters = characters.characters.map(char => ({
+        ...char,
+        found: false
+      }))
+  
+      activeGames.set(sessionId, game(playerName, characters))
+      res.json({ message: 'Game started', playerName, characters })
+    } catch (error) {
+      console.error('Error starting game:', error)
+      res.status(500).json({ error: 'Internal server error' })
     }
-    game.updateLastActivity()
-    res.json({ message: 'Heartbeat received' });
-}
+  }
 
-function endGame(req, res) {
-    const sessionId = req.sessionId
-    const game = activeGames.get(sessionId)
-    if (!game || game.complete) {
-        return res.status(400).json({ error: 'No active game found' });
+  function heartbeat(req, res) {
+    try {
+      const { sessionId } = req
+      const game = activeGames.get(sessionId)
+      
+      if (!game || game.complete) {
+        return res.status(404).json({ error: 'No active game found' })
+      }
+  
+      game.updateLastActivity()
+      res.json({ message: 'Heartbeat received' })
+    } catch (error) {
+      console.error('Error processing heartbeat:', error)
+      res.status(500).json({ error: 'Internal server error' })
     }
-    game.endGame()
-    //TODO: add game data to database
-    res.json({ message: 'Game complete', finalTime: game.finalTime });
-    activeGames.delete(sessionId)
-}
+  }
 
-async function makeGuess(req, res) {
-    const MIN_ACCURACY = 70
-    const levelId = req.body.levelId
-    if (!levelId) res.status(400).json({ error: 'invalid level id' });
-    const characterId = req.body.levelId
-    if (!characterId) res.status(400).json({ error: 'invalid character id' });
 
-    const selectionData = req.body.selection
-    const characterLocation = await gameDb.getCharacterLocation(characterId, levelId)
-    const overlapPrecentage = calculateOverlap(selectionData, characterLocation)
-    res.json({result: overlapPrecentage >= MIN_ACCURACY ? 'success' : 'fail'})
-}
+  function endGame(req, res) {
+    try {
+      const { sessionId } = req
+      const game = activeGames.get(sessionId)
+      
+      if (!game || game.complete) {
+        return res.status(404).json({ error: 'No active game found' })
+      }
+  
+      game.endGame()
+      const finalTime = game.finalTime
+      activeGames.delete(sessionId)
+      res.json({ message: 'Game complete', finalTime })
+    } catch (error) {
+      console.error('Error ending game:', error)
+      res.status(500).json({ error: 'Internal server error' })
+    }
+  }
 
-async function getLevels(req,res) {
-    const levels = await gameDb.getAllLevels()
-    res.json({levels});
-}
+  async function makeGuess(req, res) {
+    try {
+      const MIN_ACCURACY = 70
+      const { levelId, characterId, selection: selectionData } = req.body
+  
+      const characterLocation = await gameDb.getCharacterLocation(characterId, levelId)
+      if (!characterLocation) {
+        return res.status(404).json({ error: 'Character location not found' })
+      }
+  
+      const overlapPercentage = calculateOverlap(selectionData, characterLocation)
+      res.json({ result: overlapPercentage >= MIN_ACCURACY ? 'success' : 'fail' })
+    } catch (error) {
+      console.error('Error processing guess:', error)
+      res.status(500).json({ error: 'Internal server error' })
+    }
+  }
+
+  async function getLevels(req, res) {
+    try {
+      const levels = await gameDb.getAllLevels()
+      if (!levels) {
+        return res.status(404).json({ error: 'No levels found' })
+      }
+      res.json({ levels })
+    } catch (error) {
+      console.error('Error fetching levels:', error)
+      res.status(500).json({ error: 'Failed to fetch levels' })
+    }
+  }
 
 module.exports = {
     startGame,
