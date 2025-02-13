@@ -5,11 +5,14 @@ import { useImageTransform } from '../hooks/useImageTransform';
 import { useImageInteraction } from '../hooks/useImageInteraction';
 import GameControls from './GameControls';
 import LoadingScreen from './Loading';
+import NameEntry from './NameEntry';
 
 function Game() {
     const gameAreaRef = useRef(null);
     const imgContainerRef = useRef(null);
     const [loading, setLoading] = useState(true)
+    const [playerName, setPlayerName] = useState(null);
+    const [selectedLevel, setSelectedLevel] = useState(null);
 
     useEffect(() => {
         setTimeout(() => {
@@ -35,6 +38,8 @@ function Game() {
         handleMouseMove
     } = useImageInteraction(updatePosition, scale, translateX, translateY, gameAreaRef,imgContainerRef);
 
+
+    if (!playerName) return <NameEntry onNameSubmit={setPlayerName} />;
 
     return (
         <>
