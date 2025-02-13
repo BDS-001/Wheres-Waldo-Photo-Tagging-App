@@ -2,10 +2,8 @@ const gameDb = require('../prisma/queries/gameQueries')
 const {calculateOverlap} = require('../utils/areaCalculations')
 const activeGames = new Map()
 
-const game = (playerSelectedName, characters) => {
+const game = (playerName, levelId, characters) => {
     const startTime = Date.now()
-    const playerName = playerSelectedName
-    const characters = characters
     let lastActivity = startTime
     let complete = false
     let finalTime = null
@@ -20,8 +18,10 @@ const game = (playerSelectedName, characters) => {
     }
 
     return {
-        get startTime() {return startTime},
-        get playerName() {return playerName},
+        get startTime() { return startTime },
+        get playerName() { return playerName },
+        get levelId() { return levelId },        
+        get characters() { return characters },  
         get lastActivity() {return lastActivity},
         get complete() {return complete},
         get finalTime() {return finalTime},
@@ -55,8 +55,8 @@ async function startGame(req, res) {
         found: false
       }))
   
-      activeGames.set(sessionId, game(playerName, characters))
-      res.json({ message: 'Game started', playerName, characters })
+      activeGames.set(sessionId, game(playerName, levelId, characters))
+      res.json({ message: 'Game started', playerName, levelId, characters})
     } catch (error) {
       console.error('Error starting game:', error)
       res.status(500).json({ error: 'Internal server error' })
@@ -81,7 +81,7 @@ async function startGame(req, res) {
   }
 
 
-  function endGame(req, res) {
+  async function endGame(req, res) {
     try {
       const { sessionId } = req
       const game = activeGames.get(sessionId)
@@ -91,9 +91,20 @@ async function startGame(req, res) {
       }
   
       game.endGame()
+
+      const timeSeconds = game.finalTime / 1000
+      const leaderboardEntry = await gameDb.addLeaderboardEntry({
+        playerName: game.playerName,
+        levelId: game.levelId,
+        timeSeconds
+      })
       const finalTime = game.finalTime
       activeGames.delete(sessionId)
-      res.json({ message: 'Game complete', finalTime })
+      res.json({ 
+        message: 'Game complete', 
+        finalTime: game.finalTime,
+        leaderboardEntry 
+      })
     } catch (error) {
       console.error('Error ending game:', error)
       res.status(500).json({ error: 'Internal server error' })
