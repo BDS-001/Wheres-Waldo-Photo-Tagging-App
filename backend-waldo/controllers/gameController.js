@@ -162,9 +162,45 @@ async function makeGuess(req, res) {
     }
   }
 
+  async function resumeGame(req, res) {
+    try {
+      const { sessionId } = req;
+      const game = activeGames.get(sessionId);
+      
+      if (!game) {
+        return res.status(404).json({ error: 'No active game found' });
+      }
+  
+      game.updateLastActivity();
+      res.json({
+        playerName: game.playerName,
+        levelId: game.levelId,
+        characters: game.characters,
+        startTime: game.startTime,
+        elapsedTime: Date.now() - game.startTime
+      });
+    } catch (error) {
+      console.error('Error resuming game:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  async function getLeaderboard(req, res) {
+    try {
+        const { levelId } = req.params;
+        const leaderboard = await gameDb.getLeaderboard(levelId);
+        res.json({ leaderboard });
+    } catch (error) {
+        console.error('Error fetching leaderboard:', error);
+        res.status(500).json({ error: 'Failed to fetch leaderboard' });
+    }
+}
+
 module.exports = {
     startGame,
     heartbeat,
     makeGuess,
-    getLevels
+    getLevels,
+    resumeGame,
+    getLeaderboard
 }

@@ -48,9 +48,28 @@ async function getAllLevels() {
     return await prisma.Level.findMany()
 }
 
+async function getLeaderboard(levelId, limit = 10) {
+    return await prisma.LeaderboardEntry.findMany({
+      where: {
+        levelId: parseInt(levelId)
+      },
+      orderBy: {
+        timeSeconds: 'asc'
+      },
+      take: limit,
+      select: {
+        id: true,
+        playerName: true,
+        timeSeconds: true,
+        createdAt: true
+      }
+    });
+  }
+
 module.exports = {
     getCharacterLocation,
     addLeaderboardEntry,
     getCharactersFromLevel,
-    getAllLevels
+    getAllLevels,
+    getLeaderboard
 }
