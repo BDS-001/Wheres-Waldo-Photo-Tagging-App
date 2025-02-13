@@ -4,7 +4,7 @@ function calculateOverlap(rect1, rect2) {
     const { x: x2, y: y2, width: w2, height: h2 } = rect2
 
     //subtract left most right edge and the right mose left edge, msut be greater than 0
-    const overlapWidth = Math.max(0, Math.min(x1 + w1, x2 + w2) - Math.max(x1. x2))
+    const overlapWidth = Math.max(0, Math.min(x1 + w1, x2 + w2) - Math.max(x1, x2))
 
     //subtract lowest(number) y bottom value with the highest(number) top value
     const overlapHeight = Math.max(0, Math.min(y1 + h1, y2 + h2) - Math.max(y1, y2))
