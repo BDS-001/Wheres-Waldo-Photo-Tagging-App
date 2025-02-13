@@ -44,8 +44,13 @@ async function getCharactersFromLevel(levelId) {
     })
   }
 
+async function getAllLevels() {
+    return await prisma.Level.findMany()
+}
+
 module.exports = {
     getCharacterLocation,
     addLeaderboardEntry,
-    getCharactersFromLevel
+    getCharactersFromLevel,
+    getAllLevels
 }

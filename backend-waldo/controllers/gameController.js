@@ -90,9 +90,15 @@ async function makeGuess(req, res) {
     res.json({result: overlapPrecentage >= MIN_ACCURACY ? 'success' : 'fail'})
 }
 
+async function getLevels(req,res) {
+    const levels = await gameDb.getAllLevels()
+    res.json({levels});
+}
+
 module.exports = {
     startGame,
     heartbeat,
     endGame,
-    makeGuess
+    makeGuess,
+    getLevels
 }
