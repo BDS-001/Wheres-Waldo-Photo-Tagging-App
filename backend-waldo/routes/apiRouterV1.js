@@ -6,6 +6,9 @@ const { validationResults } = require('../validators');
 // Get all available levels
 router.get('/levels', gameController.getLevels);
 
+// Get leaderboard for a specific level
+router.get('/leaderboard/:levelId', gameController.getLeaderboard);
+
 // Start a new game
 router.post('/start', 
   validationResults('gameStart'),
@@ -21,10 +24,7 @@ router.post('/guess',
   gameController.makeGuess
 );
 
-// Submit a leaderboard entry (typically handled automatically by the game)
-router.post('/leaderboard',
-  validationResults('leaderboard'),
-  gameController.addLeaderboardEntry
-);
+// Resume an existing game
+router.get('/resume', gameController.resumeGame);
 
 module.exports = router;
