@@ -7,8 +7,9 @@ const NameEntry = ({ onNameSubmit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (playerName.length === maxLength) {
-      onNameSubmit(playerName.toUpperCase());
+    if (playerName.trim().length > 0) {
+      onNameSubmit(playerName);
+      console.log('submitted player name', playerName)
     }
   };
 
@@ -16,7 +17,9 @@ const NameEntry = ({ onNameSubmit }) => {
     const value = e.target.value;
     if (value.length <= maxLength) {
       setPlayerName(value);
+      console.log('updated value', value)
     }
+    console.log('keypress detected')
   };
 
   return (
@@ -32,7 +35,7 @@ const NameEntry = ({ onNameSubmit }) => {
         />
         <button
           type="submit"
-          disabled={playerName.length !== maxLength}
+          disabled={playerName.trim().length === 0}
         >
           Start Game
         </button>
