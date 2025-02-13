@@ -17,6 +17,14 @@ const game = (playerName, levelId, characters) => {
         finalTime = Date.now() - startTime
     }
 
+    const updateCharacterFound = (characterId) => {
+        const character = characters.find(char => char.character.id === characterId)
+        if (character) {
+            character.found = true
+        }
+        return characters.every(char => char.found)
+    }
+
     return {
         get startTime() { return startTime },
         get playerName() { return playerName },
@@ -26,7 +34,8 @@ const game = (playerName, levelId, characters) => {
         get complete() {return complete},
         get finalTime() {return finalTime},
         updateLastActivity,
-        endGame
+        endGame,
+        updateCharacterFound
     }
 }
 
@@ -81,53 +90,64 @@ async function startGame(req, res) {
   }
 
 
-  async function endGame(req, res) {
-    try {
-      const { sessionId } = req
-      const game = activeGames.get(sessionId)
-      
-      if (!game || game.complete) {
-        return res.status(404).json({ error: 'No active game found' })
-      }
-  
-      game.endGame()
-
-      const timeSeconds = game.finalTime / 1000
-      const leaderboardEntry = await gameDb.addLeaderboardEntry({
+  async function handleGameCompletion(game, sessionId) {
+    game.endGame()
+    const timeSeconds = game.finalTime / 1000
+    const leaderboardEntry = await gameDb.addLeaderboardEntry({
         playerName: game.playerName,
         levelId: game.levelId,
         timeSeconds
-      })
-      const finalTime = game.finalTime
-      activeGames.delete(sessionId)
-      res.json({ 
-        message: 'Game complete', 
+    })
+    
+    activeGames.delete(sessionId)
+    return { 
+        gameComplete: true,
         finalTime: game.finalTime,
-        leaderboardEntry 
-      })
-    } catch (error) {
-      console.error('Error ending game:', error)
-      res.status(500).json({ error: 'Internal server error' })
+        leaderboardEntry
     }
-  }
+}
 
-  async function makeGuess(req, res) {
+async function makeGuess(req, res) {
     try {
-      const MIN_ACCURACY = 70
-      const { levelId, characterId, selection: selectionData } = req.body
-  
-      const characterLocation = await gameDb.getCharacterLocation(characterId, levelId)
-      if (!characterLocation) {
-        return res.status(404).json({ error: 'Character location not found' })
-      }
-  
-      const overlapPercentage = calculateOverlap(selectionData, characterLocation)
-      res.json({ result: overlapPercentage >= MIN_ACCURACY ? 'success' : 'fail' })
+        const MIN_ACCURACY = 70
+        const { sessionId } = req
+        const { levelId, characterId, selection: selectionData } = req.body
+    
+        const game = activeGames.get(sessionId)
+        if (!game || game.complete) {
+            return res.status(404).json({ error: 'No active game found' })
+        }
+
+        const characterLocation = await gameDb.getCharacterLocation(characterId, levelId)
+        if (!characterLocation) {
+            return res.status(404).json({ error: 'Character location not found' })
+        }
+    
+        const overlapPercentage = calculateOverlap(selectionData, characterLocation)
+        const isCorrect = overlapPercentage >= MIN_ACCURACY
+
+        let gameComplete = false
+        if (isCorrect) {
+            gameComplete = game.updateCharacterFound(characterId)
+            if (gameComplete) {
+                const gameResult = await handleGameCompletion(game, sessionId)
+                return res.json({ 
+                    result: 'success',
+                    ...gameResult
+                })
+            }
+        }
+
+        res.json({ 
+            result: isCorrect ? 'success' : 'fail',
+            gameComplete: false,
+            characters: game.characters
+        })
     } catch (error) {
-      console.error('Error processing guess:', error)
-      res.status(500).json({ error: 'Internal server error' })
+        console.error('Error processing guess:', error)
+        res.status(500).json({ error: 'Internal server error' })
     }
-  }
+}
 
   async function getLevels(req, res) {
     try {
@@ -145,7 +165,6 @@ async function startGame(req, res) {
 module.exports = {
     startGame,
     heartbeat,
-    endGame,
     makeGuess,
     getLevels
 }
