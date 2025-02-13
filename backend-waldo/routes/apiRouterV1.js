@@ -1,7 +1,7 @@
 const express = require('express')
 const router  = express.Router()
 const gameController =  require('../controllers/gameController')
-const { validationResults } = require('../validators');
+const { validationResults } = require('../middleware/validators');
 
 // Get all available levels
 router.get('/levels', gameController.getLevels);
