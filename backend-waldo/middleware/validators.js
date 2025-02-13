@@ -1,5 +1,24 @@
 const { body, validationResult } = require('express-validator');
 
+const validateGameStart = [
+  body('playerName')
+    .exists()
+    .withMessage('playerName is required')
+    .isString()
+    .withMessage('playerName must be a string')
+    .trim()
+    .isLength({ min: 1, max: 20 })
+    .withMessage('Player name must be between 1 and 20 characters')
+    .matches(/^[A-Za-z0-9 -_]+$/)
+    .withMessage('Player name can only contain letters, numbers, spaces, underscores, hyphens'),
+
+  body('levelId')
+    .exists()
+    .withMessage('levelId is required')
+    .isInt({ min: 1 })
+    .withMessage('Level ID must be a positive integer'),
+];
+
 const validateGuess = [
     body('levelId')
       .exists()
@@ -67,7 +86,7 @@ const validateGuess = [
   const validators = {
     guess: validateGuess,
     loaderboard: leaderboardEntryValidators,
-
+    gameStart: validateGameStart
   };
   
   function validationResults(validator) {
