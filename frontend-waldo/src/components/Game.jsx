@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-vars */
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import AreaSelect from './AreaSelect';
 import { useImageTransform } from '../hooks/useImageTransform';
 import { useImageInteraction } from '../hooks/useImageInteraction';
@@ -8,6 +7,9 @@ import LoadingScreen from './Loading';
 import NameEntry from './NameEntry';
 import LevelSelector from './LevelSelector';
 import Leaderboard from './Leaderboard';
+import { startGame } from '../services/gameService';
+import { useHeartbeat } from '../hooks/useHeartbeat';
+import CharacterGuess from './CharacterGuess';
 
 function Game() {
     const gameAreaRef = useRef(null);
@@ -17,6 +19,9 @@ function Game() {
     const [selectedLevel, setSelectedLevel] = useState(null);
     const [gameState, setGameState] = useState('name-entry');
     const [error, setError] = useState(null);
+    const [foundCharacters, setFoundCharacters] = useState([]);
+    const [characters, setCharacters] = useState([]);
+    useHeartbeat(gameState === 'playing')
 
     const { 
         scale, 
@@ -31,6 +36,7 @@ function Game() {
 
     const {
         select,
+        setSelect,
         handleMouseDown,
         handleMouseUp,
         handleMouseLeave,
@@ -46,9 +52,25 @@ function Game() {
         try {
             setLoading(true);
             setSelectedLevel(level);
-            console.log(level)
+            const gameSession = await startGame(playerName, level.id);
             
-            //const gameSession = await startGame(playerName, level.id);
+            if (gameSession.characters) {
+                const charactersList = gameSession.characters.map(char => ({
+                    id: char.character.id,
+                    name: char.character.name,
+                    location: {
+                        x: char.x,
+                        y: char.y,
+                        width: char.width,
+                        height: char.height
+                    }
+                }));
+                setCharacters(charactersList);
+            } else {
+                console.error('No characters received from game session');
+                setError('Failed to load characters for this level');
+            }
+            
             setGameState('playing');
             setError(null);
         } catch (err) {
@@ -56,6 +78,15 @@ function Game() {
             setError('Failed to start game. Please try again.');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleGuessComplete = (characterId) => {
+        setFoundCharacters(prev => [...prev, characterId]);
+        
+        // Check if all characters are found
+        if (foundCharacters.length + 1 === characters.length) {
+            setGameState('finished');
         }
     };
 
@@ -86,6 +117,14 @@ function Game() {
             return (
                 <>
                     <GameControls onZoomIn={zoomIn} onZoomOut={zoomOut} />
+                    <CharacterGuess
+                        levelId={selectedLevel.id}
+                        selectedPosition={select}
+                        onGuessSubmit={() => setSelect(prev => ({ ...prev, display: 'none' }))}
+                        foundCharacters={foundCharacters}
+                        characters={characters}
+                        onGuessComplete={handleGuessComplete}
+                    />
                     <div className="img-container" ref={imgContainerRef}>
                         <div className="img-wrapper">
                             <img 
