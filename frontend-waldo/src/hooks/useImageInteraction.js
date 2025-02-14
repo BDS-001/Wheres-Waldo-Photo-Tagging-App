@@ -74,7 +74,7 @@ Original Image Y: ${y.toFixed(2)}
         clearTimeout(draggableTimer.current);
         draggableTimer.current = null;
         if (!dragged.current && imgContainerRef.current) {
-            getImageCoordinates(e)
+            const [x, y] = getImageCoordinates(e)
             const rect = imgContainerRef.current.getBoundingClientRect();
             const relativeX = e.clientX - rect.left;
             const relativeY = e.clientY - rect.top;
@@ -83,6 +83,10 @@ Original Image Y: ${y.toFixed(2)}
                 ...prev,
                 top: relativeY,
                 left: relativeX,
+                x: x,
+                y: y,
+                width: 50,
+                height: 50,
                 display: 'block',
                 scale: scale || 1
             }));
