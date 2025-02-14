@@ -82,6 +82,7 @@ async function startGame(req, res) {
       }
   
       game.updateLastActivity()
+      console.log('Heartbeat received', game)
       res.json({ message: 'Heartbeat received' })
     } catch (error) {
       console.error('Error processing heartbeat:', error)
@@ -124,6 +125,11 @@ async function makeGuess(req, res) {
         }
     
         const overlapPercentage = calculateOverlap(selectionData, characterLocation)
+        console.log('----- DEBUG INFO -----');
+        console.log('OVERLAP PERCENTAGE:', overlapPercentage);
+        console.log('SELECTION DATA:', selectionData);
+        console.log('CHARACTER LOCATION:', characterLocation);
+        console.log('----------------------');
         const isCorrect = overlapPercentage >= MIN_ACCURACY
 
         let gameComplete = false
