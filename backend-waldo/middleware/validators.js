@@ -20,50 +20,44 @@ const validateGameStart = [
 ];
 
 const validateGuess = [
-    body('levelId')
-      .exists()
-      .withMessage('levelId is required')
-      .isString()
-      .withMessage('levelId must be a string')
-      .notEmpty()
-      .withMessage('levelId cannot be empty')
-      .trim(),
-  
-    body('characterId')
-      .exists()
-      .withMessage('characterId is required')
-      .isString()
-      .withMessage('characterId must be a string')
-      .notEmpty()
-      .withMessage('characterId cannot be empty')
-      .trim(),
-  
-    body('selection')
-      .exists()
-      .withMessage('selection is required')
-      .isObject()
-      .withMessage('selection must be an object')
-      .customSanitizer((value) => {
-        const requiredFields = ['x', 'y', 'width', 'height'];
-        
-        const hasAllFields = requiredFields.every(field =>
-          typeof value[field] === 'number' && 
-          !isNaN(value[field]) && 
-          isFinite(value[field])
-        );
-        
-        if (!hasAllFields) {
-          throw new Error('selection must contain valid x, y, width, and height values');
-        }
-  
-        if (value['width'] <= 0 || value['height'] <= 0) {
-          throw new Error('width and height must be positive numbers');
-        }
-  
-        // Return only the required fields as a sanitized object
-        return ({x, y, width, height} = value);
-      }),
-  ];
+  body('levelId')
+    .exists()
+    .withMessage('levelId is required')
+    .isInt({ min: 1 })
+    .withMessage('levelId must be a positive integer'),
+
+  body('characterId')
+    .exists()
+    .withMessage('characterId is required')
+    .isInt({ min: 1 })
+    .withMessage('characterId must be a positive integer'),
+
+  body('selection')
+    .exists()
+    .withMessage('selection is required')
+    .isObject()
+    .withMessage('selection must be an object')
+    .customSanitizer((value) => {
+      const requiredFields = ['x', 'y', 'width', 'height'];
+      
+      const hasAllFields = requiredFields.every(field =>
+        typeof value[field] === 'number' && 
+        !isNaN(value[field]) && 
+        isFinite(value[field])
+      );
+      
+      if (!hasAllFields) {
+        throw new Error('selection must contain valid x, y, width, and height values');
+      }
+
+      if (value['width'] <= 0 || value['height'] <= 0) {
+        throw new Error('width and height must be positive numbers');
+      }
+
+      // Return only the required fields as a sanitized object
+      return ({x, y, width, height} = value);
+    }),
+];
 
   const leaderboardEntryValidators = [
     body('playerName')
