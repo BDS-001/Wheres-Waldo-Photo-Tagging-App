@@ -28,11 +28,15 @@ const CharacterGuess = ({
         setIsSubmitting(true);
         setError(null);
     
+        const width = Number(selectedPosition.width || 50);
+        const height = Number(selectedPosition.height || 50);
+        
+        // Calculate top-left coordinates by subtracting half width/height
         const selection = {
-          x: Number(selectedPosition.x),
-          y: Number(selectedPosition.y),
-          width: Number(selectedPosition.width || 50),
-          height: Number(selectedPosition.height || 50)
+          x: Number(selectedPosition.x) - (width / 2),
+          y: Number(selectedPosition.y) - (height / 2),
+          width: width,
+          height: height
         };
     
         console.log('Submitting guess with:', {
