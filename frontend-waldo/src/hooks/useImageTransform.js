@@ -7,7 +7,8 @@ export const useImageTransform = (gameAreaRef, imgContainerRef, SCALE_VAL = 0.1)
     const [minScale, setMinScale] = useState(0.2);
     const [maxScale, setMaxScale] = useState(4);
     const [offsetLimits, setOffsetLimits] = useState({ xOffset: 0, yOffset: 0 });
-    const [windowResizeSwitch, setWindowResizeSwitch] = useState(false)
+    const [windowResizeSwitch, setWindowResizeSwitch] = useState(false);
+    const [gameStarted, setGameStarted] = useState(false)
 
     const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
@@ -18,20 +19,20 @@ export const useImageTransform = (gameAreaRef, imgContainerRef, SCALE_VAL = 0.1)
 
     useEffect(() => {
         const handleResize = () => {
-          setWindowResizeSwitch(prev => !prev)
+            setWindowResizeSwitch(prev => !prev);
         };
     
         window.addEventListener('resize', handleResize);
-        
-        // Cleanup
         return () => {
-          window.removeEventListener('resize', handleResize);
+            window.removeEventListener('resize', handleResize);
         };
-      }, []);
+    }, []);
 
     // Calculate initial scale values
     useEffect(() => {
         const calculateScaleValues = () => {
+            if (!gameAreaRef.current || !imgContainerRef.current) return;
+
             const img = gameAreaRef.current;
             const container = imgContainerRef.current.getBoundingClientRect();
             const scaleX = container.width / img.naturalWidth;
@@ -42,17 +43,30 @@ export const useImageTransform = (gameAreaRef, imgContainerRef, SCALE_VAL = 0.1)
             setMaxScale(min + (SCALE_VAL * 6));
             setScale(min);
         };
-        calculateScaleValues();
-    }, [SCALE_VAL, gameAreaRef, imgContainerRef]);
+
+        // Wait for image to load before calculating scale
+        const img = gameAreaRef.current;
+        if (img) {
+            if (img.complete) {
+                calculateScaleValues();
+            } else {
+                img.onload = calculateScaleValues;
+            }
+        }
+    }, [SCALE_VAL, gameAreaRef, imgContainerRef, gameStarted]);
 
     // Update transform
     useEffect(() => {
         const img = gameAreaRef.current;
-        img.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+        if (img) {
+            img.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+        }
     }, [scale, translateX, translateY, gameAreaRef]);
 
     // Update offset limits
     useEffect(() => {
+        if (!gameAreaRef.current || !imgContainerRef.current) return;
+
         const img = gameAreaRef.current;
         const container = imgContainerRef.current.getBoundingClientRect();
         
@@ -63,12 +77,10 @@ export const useImageTransform = (gameAreaRef, imgContainerRef, SCALE_VAL = 0.1)
         const yOffset = Math.min(container.height - scaledHeight, 0);
         
         setOffsetLimits({ xOffset, yOffset });
-    }, [scale, gameAreaRef, imgContainerRef, windowResizeSwitch]);
+    }, [scale, gameAreaRef, imgContainerRef, windowResizeSwitch, gameStarted]);
 
     // Update position when offset limits change
     useEffect(() => updatePosition(0, 0), [offsetLimits, updatePosition]);
-
-    
 
     const zoomIn = () => {
         setScale(prev => Math.min(prev + SCALE_VAL, maxScale));
@@ -84,6 +96,8 @@ export const useImageTransform = (gameAreaRef, imgContainerRef, SCALE_VAL = 0.1)
         translateY,
         updatePosition,
         zoomIn,
-        zoomOut
+        zoomOut,
+        setGameStarted,
+        gameStarted
     };
 };

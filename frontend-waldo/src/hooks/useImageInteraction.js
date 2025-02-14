@@ -11,23 +11,20 @@ export const useImageInteraction = (updatePosition, scale, translateX, translate
         width: '50px',
         height: '50px',
         display: 'none',
-        scale: scale
+        scale: scale || 1
     });
 
-    // Update selection scale when image scale changes
     useEffect(() => {
-        setSelect(prev => ({...prev, scale}));
+        setSelect(prev => ({...prev, scale: scale || 1}));
     }, [scale]);
 
-    // Reset selection when transform changes
     useEffect(() => {
         setSelect(prev => ({...prev, display: 'none'}));
     }, [scale, translateX, translateY]);
 
     const getImageCoordinates = (e) => {
         const img = gameAreaRef.current;
-        const rect = img.getBoundingClientRect();
-
+        const rect = img.getBoundingClientRect()
         const scaleX = img.naturalWidth / rect.width;
         const scaleY = img.naturalHeight / rect.height;
         
@@ -39,33 +36,29 @@ Image Details:
 -------------
 Natural Width: ${img.naturalWidth}px
 Natural Height: ${img.naturalHeight}px
-
 Current Display:
 --------------
 Displayed Width: ${rect.width.toFixed(2)}px
 Displayed Height: ${rect.height.toFixed(2)}px
 Image Left Position: ${rect.left.toFixed(2)}px
 Image Top Position: ${rect.top.toFixed(2)}px
-
 Scale Factors:
 -------------
 Scale X: ${scaleX.toFixed(3)}
 Scale Y: ${scaleY.toFixed(3)}
-
 Click Position:
 -------------
 Client X: ${e.clientX}
 Client Y: ${e.clientY}
 Relative to Image X: ${(e.clientX - rect.left).toFixed(2)}
 Relative to Image Y: ${(e.clientY - rect.top).toFixed(2)}
-
 Final Coordinates:
 ---------------
 Original Image X: ${x.toFixed(2)}
 Original Image Y: ${y.toFixed(2)}
-        `);
-        return [x, y];
-    };
+            `);
+        return [x, y]
+    }
 
     const handleMouseDown = (e) => {
         if (e.button !== 0) return;
@@ -80,8 +73,8 @@ Original Image Y: ${y.toFixed(2)}
         isHoldingRef.current = false;
         clearTimeout(draggableTimer.current);
         draggableTimer.current = null;
-        if (!dragged.current) {
-            const [x, y] = getImageCoordinates(e);
+        if (!dragged.current && imgContainerRef.current) {
+            getImageCoordinates(e)
             const rect = imgContainerRef.current.getBoundingClientRect();
             const relativeX = e.clientX - rect.left;
             const relativeY = e.clientY - rect.top;
@@ -91,9 +84,8 @@ Original Image Y: ${y.toFixed(2)}
                 top: relativeY,
                 left: relativeX,
                 display: 'block',
-                scale: scale
+                scale: scale || 1
             }));
-            console.log(`Click coordinates: \nX: ${x} \nY: ${y}`);
         }
         dragged.current = false;
     };
@@ -105,13 +97,12 @@ Original Image Y: ${y.toFixed(2)}
     };
 
     const handleMouseMove = (e) => {
-        if (isHoldingRef.current) {
+        if (isHoldingRef.current && updatePosition) {
             dragged.current = true;
             const deltaX = e.clientX - lastPositionRef.current.x;
             const deltaY = e.clientY - lastPositionRef.current.y;
             updatePosition(deltaX, deltaY);
             lastPositionRef.current = { x: e.clientX, y: e.clientY };
-            // Hide selection when dragging
             setSelect(prev => ({...prev, display: 'none'}));
         }
     };
