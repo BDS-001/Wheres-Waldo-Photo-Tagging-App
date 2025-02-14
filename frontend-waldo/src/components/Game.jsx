@@ -57,13 +57,7 @@ function Game() {
             if (gameSession.characters) {
                 const charactersList = gameSession.characters.map(char => ({
                     id: char.character.id,
-                    name: char.character.name,
-                    location: {
-                        x: char.x,
-                        y: char.y,
-                        width: char.width,
-                        height: char.height
-                    }
+                    name: char.character.name
                 }));
                 setCharacters(charactersList);
             } else {
