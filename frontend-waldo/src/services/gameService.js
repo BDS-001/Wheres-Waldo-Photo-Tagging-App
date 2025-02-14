@@ -42,22 +42,32 @@ export const heartbeat = async () => {
 };
 
 // Submit a guess for character location
-export const submitGuess = async (levelId, x, y) => {
+export const submitGuess = async (levelId, characterId, selection) => {
   try {
+    const requestBody = {
+      levelId: Number(levelId),
+      characterId: Number(characterId),
+      selection: {
+        x: Number(selection.x),
+        y: Number(selection.y),
+        width: Number(selection.width),
+        height: Number(selection.height)
+      }
+    };
+    console.log('Request body:', requestBody);
+
     const response = await fetch(`${API_BASE_URL}/guess`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        levelId,
-        x,
-        y
-      })
+      body: JSON.stringify(requestBody)
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorData = await response.json();
+      console.log('Validation errors:', errorData.details);
+      throw new Error(`Validation failed: ${JSON.stringify(errorData.details)}`);
     }
     return await response.json();
   } catch (error) {
