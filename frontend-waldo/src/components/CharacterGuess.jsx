@@ -16,7 +16,6 @@ const CharacterGuess = ({
   
     const isSelectionActive = selectedPosition.display === 'block';
   
-    // Reset selected character when position changes
     useEffect(() => {
       setSelectedCharacter('');
       setError(null);
@@ -39,10 +38,10 @@ const CharacterGuess = ({
           height: height
         };
     
-        console.log('Submitting guess with:', {
+        console.log('Submitting guess with adjusted coordinates:', {
           levelId,
           characterId: selectedCharacter,
-          selection
+          selection,
         });
     
         try {
@@ -51,14 +50,11 @@ const CharacterGuess = ({
             Number(selectedCharacter),
             selection
           );
-
-          console.log(result)
           
-          if (result.isCorrect) {
-            onGuessComplete(selectedCharacter);
+          if (result.result === 'success') {
+            onGuessComplete(selectedCharacter, result.gameComplete, result.finalTime);
           }
           
-          // Clear selection after guess
           setSelectedCharacter('');
           onGuessSubmit(null);
         } catch (err) {
@@ -76,24 +72,24 @@ const CharacterGuess = ({
     return (
       <div className="guess-container">
         <div className="guess-content">
-        <select
+          <select
             value={selectedCharacter}
             onChange={(e) => setSelectedCharacter(e.target.value)}
             className="character-select"
             disabled={!isSelectionActive || isSubmitting}
-        >
+          >
             <option key="default" value="">Select a character...</option>
             {characters.map((character) => (
-                <option
-                    key={`character-${character.id}`}
-                    value={character.id}
-                    disabled={isCharacterFound(character.id)}
-                    className={isCharacterFound(character.id) ? 'character-found' : ''}
-                >
-                    {character.name} {isCharacterFound(character.id) ? '(Found!)' : ''}
-                </option>
+              <option
+                key={`character-${character.id}`}
+                value={character.id}
+                disabled={isCharacterFound(character.id)}
+                className={isCharacterFound(character.id) ? 'character-found' : ''}
+              >
+                {character.name} {isCharacterFound(character.id) ? '(Found!)' : ''}
+              </option>
             ))}
-        </select>
+          </select>
   
           {error && (
             <div className="error-message">
@@ -121,6 +117,6 @@ const CharacterGuess = ({
         </div>
       </div>
     );
-  };
+};
   
-  export default CharacterGuess;
+export default CharacterGuess;
