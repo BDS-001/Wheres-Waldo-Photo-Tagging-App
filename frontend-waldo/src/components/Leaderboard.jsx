@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import LoadingScreen from './Loading';
 
-const Leaderboard = ({ levelId }) => {
+const Leaderboard = ({ levelId, onPlayAgain, finalTime }) => {
   const [leaderboard, setLeaderboard] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -44,22 +44,38 @@ const Leaderboard = ({ levelId }) => {
     return <div className="error-message">{error}</div>;
   }
 
-  if (leaderboard.length === 0) {
-    return <div className="no-scores">No scores yet. Be the first!</div>;
-  }
-
   return (
-    <div className="leaderboard">
-      <h3>Top Scores</h3>
-      <div className="scores-list">
-        {leaderboard.map((entry, index) => (
-          <div key={entry.id} className="score-entry">
-            <span className="rank">{index + 1}.</span>
-            <span className="player-name">{entry.playerName}</span>
-            <span className="time">{formatTime(entry.timeSeconds)}</span>
+    <div className="game-finished">
+      <h2>Game Complete!</h2>
+      {finalTime && (
+        <div className="final-time">
+          Your Time: {formatTime(finalTime / 1000)} seconds
+        </div>
+      )}
+      
+      <div className="leaderboard">
+        <h3>Top Scores</h3>
+        {leaderboard.length === 0 ? (
+          <div className="no-scores">No scores yet. Be the first!</div>
+        ) : (
+          <div className="scores-list">
+            {leaderboard.map((entry, index) => (
+              <div key={entry.id} className="score-entry">
+                <span className="rank">{index + 1}.</span>
+                <span className="player-name">{entry.playerName}</span>
+                <span className="time">{formatTime(entry.timeSeconds)}</span>
+              </div>
+            ))}
           </div>
-        ))}
+        )}
       </div>
+
+      <button 
+        className="play-again-btn"
+        onClick={onPlayAgain}
+      >
+        Play Again
+      </button>
     </div>
   );
 };
