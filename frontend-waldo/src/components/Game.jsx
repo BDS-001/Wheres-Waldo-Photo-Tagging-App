@@ -14,13 +14,14 @@ import CharacterGuess from './CharacterGuess';
 function Game() {
     const gameAreaRef = useRef(null);
     const imgContainerRef = useRef(null);
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(false);
     const [playerName, setPlayerName] = useState(null);
     const [selectedLevel, setSelectedLevel] = useState(null);
     const [gameState, setGameState] = useState('name-entry');
     const [error, setError] = useState(null);
     const [foundCharacters, setFoundCharacters] = useState([]);
     const [characters, setCharacters] = useState([]);
+    const [finalTime, setFinalTime] = useState(null);
     useHeartbeat(gameState === 'playing')
 
     const { 
@@ -41,7 +42,7 @@ function Game() {
         handleMouseUp,
         handleMouseLeave,
         handleMouseMove
-    } = useImageInteraction(updatePosition, scale, translateX, translateY, gameAreaRef,imgContainerRef);
+    } = useImageInteraction(updatePosition, scale, translateX, translateY, gameAreaRef, imgContainerRef);
 
     const handleNameSubmit = (name) => {
         setPlayerName(name);
@@ -75,11 +76,10 @@ function Game() {
         }
     };
 
-    const handleGuessComplete = (characterId) => {
+    const handleGuessComplete = (characterId, gameComplete, finalTimeFromBackend) => {
         setFoundCharacters(prev => [...prev, characterId]);
-        
-        // Check if all characters are found
-        if (foundCharacters.length + 1 === characters.length) {
+        if (gameComplete) {
+            setFinalTime(finalTimeFromBackend);
             setGameState('finished');
         }
     };
@@ -99,7 +99,6 @@ function Game() {
 
     if (playerName && selectedLevel && !gameStarted) setGameStarted(true)
 
-    // Render different components based on game state
     switch (gameState) {
         case 'name-entry':
             return <NameEntry onNameSubmit={handleNameSubmit} />;
@@ -139,23 +138,15 @@ function Game() {
             );
             
         case 'finished':
-            setGameStarted(false)
             return (
-                <div className="game-finished">
-                    <h2>Game Complete!</h2>
-                        <div className="final-time">
-                            TODO: Your Time: {(10.2324).toFixed(1)} seconds
-                        </div>
-                    <div className="leaderboard-container">
-                        <Leaderboard levelId={selectedLevel?.id} />
-                    </div>
-                    <button 
-                        className="play-again-btn"
-                        onClick={() => setGameState('name-entry')}
-                    >
-                        Play Again
-                    </button>
-                </div>
+                <Leaderboard 
+                    levelId={selectedLevel?.id}
+                    onPlayAgain={() => {
+                        setGameState('name-entry');
+                        setGameStarted(false);
+                    }}
+                    finalTime={finalTime}
+                />
             );
             
         default:
