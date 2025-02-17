@@ -10,6 +10,7 @@ import Leaderboard from './Leaderboard';
 import { startGame } from '../services/gameService';
 import { useHeartbeat } from '../hooks/useHeartbeat';
 import CharacterGuess from './CharacterGuess';
+import Timer from './Timer';
 
 function Game() {
     const gameAreaRef = useRef(null);
@@ -109,6 +110,7 @@ function Game() {
         case 'playing':
             return (
                 <>
+                    <Timer />
                     <GameControls onZoomIn={zoomIn} onZoomOut={zoomOut} />
                     <CharacterGuess
                         levelId={selectedLevel.id}

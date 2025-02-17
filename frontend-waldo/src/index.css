@@ -159,6 +159,25 @@ button:disabled {
   z-index: 10;
 }
 
+/* Timer Styles */
+.game-timer {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  background-color: var(--background-light);
+  padding: 1rem 1.5rem;
+  border: 3px solid var(--accent-color);
+  border-radius: 0.5rem;
+  z-index: 10;
+}
+
+.timer-value {
+  font-family: 'Press Start 2P', cursive;
+  color: var(--accent-color);
+  font-size: 1.2rem;
+  text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.2);
+}
+
 /* Character Selection */
 .guess-container {
   position: fixed;
