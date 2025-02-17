@@ -1,43 +1,33 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  color: #ffffff;
-  background-color: #1a1a1a;
+  --primary-color: #ff6b6b;
+  --secondary-color: #4ecdc4;
+  --background-dark: #2d2d2d;
+  --background-light: #3d3d3d;
+  --text-primary: #ffffff;
+  --text-secondary: #cccccc;
+  --accent-color: #7c3aed;
   
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font-family: 'Press Start 2P', system-ui, -apple-system, sans-serif;
+  line-height: 1.6;
+  color: var(--text-primary);
+  background-color: var(--background-dark);
+  background-image: 
+    linear-gradient(45deg, var(--background-light) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--background-light) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--background-light) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--background-light) 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
 }
 
 #root {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 1rem;
+  padding: 2rem;
   text-align: center;
 }
 
-button {
-  background-color: #3b82f6;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
-  text-transform: capitalize;
-}
-
-button:hover {
-  background-color: #2563eb;
-}
-
-button:active {
-  background-color: #1d4ed8;
-}
-
+/* Preserve image container styles */
 .img-container {
   width: 100%;
   max-width: 1200px;
@@ -48,6 +38,7 @@ button:active {
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   background-color: #2d2d2d;
+  border: 4px solid var(--accent-color);
 }
 
 .img-wrapper {
@@ -62,46 +53,191 @@ button:active {
   transition: transform 0.2s ease-out;
 }
 
-.select-area {
-  width: 50px;
-  height: 50px;
-  border: 2px solid black;
-  border-radius: 0.25rem;
-  pointer-events: none;
-  animation: pulse 1s infinite;
-  z-index: 1;  
-  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+/* Button Styles */
+button {
+  background-color: var(--primary-color);
+  color: var(--text-primary);
+  border: 3px solid var(--text-primary);
+  padding: 0.8rem 1.5rem;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin: 0.5rem;
+  text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.2);
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2);
 }
 
-@keyframes pulse {
-  0% {
-    border-width: 2px;
-    border-color: rgba(59, 130, 246, 1);
-  }
-  50% {
-    border-width: 5px;
-    border-color: rgba(59, 130, 246, 0.6);
-  }
-  100% {
-    border-width: 2px;
-    border-color: rgba(59, 130, 246, 1);
-  }
+button:hover {
+  background-color: var(--secondary-color);
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0px rgba(0, 0, 0, 0.2);
 }
 
+button:active {
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.2);
+}
+
+button:disabled {
+  background-color: var(--background-light);
+  cursor: not-allowed;
+  transform: none;
+  opacity: 0.7;
+}
+
+/* Name Entry Styles */
+.name-entry {
+  background-color: var(--background-light);
+  padding: 2rem;
+  border-radius: 1rem;
+  border: 4px solid var(--accent-color);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  max-width: 500px;
+  margin: 2rem auto;
+}
+
+.name-entry h1 {
+  color: var(--accent-color);
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+  text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2);
+}
+
+.name-entry input {
+  background-color: var(--background-dark);
+  border: 3px solid var(--accent-color);
+  color: var(--text-primary);
+  padding: 1rem;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 1rem;
+  width: 80%;
+  max-width: 300px;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+/* Level Selector Styles */
+.level-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  padding: 1rem;
+}
+
+.level-button {
+  background-color: var(--background-light);
+  border: 3px solid var(--accent-color);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.level-button h3 {
+  font-size: 1rem;
+  color: var(--accent-color);
+  margin: 0;
+}
+
+.difficulty-badge {
+  background-color: var(--primary-color);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+/* Game Controls */
+.game-controls {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  z-index: 10;
+}
+
+/* Character Selection */
+.guess-container {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  background-color: var(--background-light);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 3px solid var(--accent-color);
+}
+
+.character-select {
+  background-color: var(--background-dark);
+  color: var(--text-primary);
+  border: 2px solid var(--accent-color);
+  padding: 0.5rem;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.8rem;
+  margin-right: 1rem;
+}
+
+/* Leaderboard Styles */
+.game-finished {
+  background-color: var(--background-light);
+  padding: 2rem;
+  border-radius: 1rem;
+  border: 4px solid var(--accent-color);
+  max-width: 600px;
+  margin: 2rem auto;
+}
+
+.final-time {
+  font-size: 2rem;
+  color: var(--accent-color);
+  margin: 1rem 0;
+  text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2);
+}
+
+.scores-list {
+  background-color: var(--background-dark);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin: 1rem 0;
+}
+
+.score-entry {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 1rem;
+  padding: 0.5rem;
+  border-bottom: 2px solid var(--accent-color);
+  text-align: left;
+}
+
+.rank {
+  color: var(--primary-color);
+  font-weight: bold;
+}
+
+.time {
+  color: var(--secondary-color);
+}
+
+/* Loading Screen */
 .loading-container {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0;
-  margin: 0;
-  background-color: pink;
-  opacity: 90%;
-  width: 100%;
-  height: 100%;
+  min-height: 200px;
+  background-color: var(--background-light);
+  border-radius: 1rem;
+  border: 4px solid var(--accent-color);
 }
 
 .loading-text {
-  font-size: 24px;
+  font-size: 1.5rem;
+  color: var(--accent-color);
 }
 
 .loading-text::before {
@@ -110,16 +246,45 @@ button:active {
 
 .loading-text::after {
   content: '';
-  animation: loading 2s infinite;
-  width: 3ch;
-  position: absolute;
-  text-align: left;
+  animation: loading 1s infinite;
 }
 
 @keyframes loading {
-  0% { content: ' '; }
-  25% { content: '.'; }
-  50% { content: '..'; }
+  0% { content: '   '; }
+  25% { content: '.  '; }
+  50% { content: '.. '; }
   75% { content: '...'; }
-  100% { content: ' '; }
+}
+
+/* Selection Area Styles */
+.select-area {
+  width: 50px;
+  height: 50px;
+  border: 4px solid var(--accent-color);
+  border-radius: 0.25rem;
+  pointer-events: none;
+  animation: pulse 1.5s infinite;
+  z-index: 1;  
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes pulse {
+  0% {
+    border-width: 4px;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5),
+                0 0 20px var(--accent-color);
+  }
+  50% {
+    border-width: 6px;
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5),
+                0 0 30px var(--secondary-color);
+  }
+  100% {
+    border-width: 4px;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5),
+                0 0 20px var(--accent-color);
+  }
 }
