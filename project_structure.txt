@@ -1,0 +1,72 @@
+./
+├── backend-waldo
+│   ├── app.js
+│   ├── config
+│   │   └── passport.js
+│   ├── controllers
+│   │   └── gameController.js
+│   ├── middleware
+│   │   └── validators.js
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── prisma
+│   │   ├── migrations
+│   │   │   ├── 20250207010507_init
+│   │   │   │   └── migration.sql
+│   │   │   ├── 20250209174855_add_leaderboard
+│   │   │   │   └── migration.sql
+│   │   │   ├── 20250212015933_remove_score
+│   │   │   │   └── migration.sql
+│   │   │   └── migration_lock.toml
+│   │   ├── prismaClient.js
+│   │   ├── queries
+│   │   │   └── gameQueries.js
+│   │   └── schema.prisma
+│   ├── public
+│   │   └── images
+│   │       └── levels
+│   │           ├── waldogame.png
+│   │           └── waldogametest.png
+│   ├── routes
+│   │   └── apiRouterV1.js
+│   ├── utils
+│   │   └── areaCalculations.js
+│   └── waldoLocation
+├── frontend-waldo
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── public
+│   │   └── vite.svg
+│   ├── README.md
+│   ├── src
+│   │   ├── App.css
+│   │   ├── App.jsx
+│   │   ├── assets
+│   │   │   ├── react.svg
+│   │   │   ├── testImage.png
+│   │   │   └── waldogame.png
+│   │   ├── components
+│   │   │   ├── AreaSelect.jsx
+│   │   │   ├── CharacterGuess.jsx
+│   │   │   ├── GameControls.jsx
+│   │   │   ├── Game.jsx
+│   │   │   ├── Leaderboard.jsx
+│   │   │   ├── LevelSelector.jsx
+│   │   │   ├── Loading.jsx
+│   │   │   ├── NameEntry.jsx
+│   │   │   └── Timer.jsx
+│   │   ├── hooks
+│   │   │   ├── useHeartbeat.js
+│   │   │   ├── useImageInteraction.js
+│   │   │   └── useImageTransform.js
+│   │   ├── index.css
+│   │   ├── main.jsx
+│   │   └── services
+│   │       └── gameService.js
+│   └── vite.config.js
+├── project_structure.txt
+└── README.md
+
+23 directories, 47 files
